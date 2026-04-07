@@ -11,7 +11,7 @@ import mapof.elections.cultures.pseudo_cultures as pseudo
 
 class Culture(Enum):
     """
-    An enum of election cultures (i.e. ways of sampling elections).
+    An enum of election statistical cultures (i.e. ways of sampling elections).
     :param culture_id: an ID as defined in the original mapof-elections
     :param implementation: PrefSampling sampling function (or mapof-elections function, if there is no PrefSampling implementation)
     :param implementation_mask: mapof-elections mask for the PrefSampling implementation
@@ -31,7 +31,7 @@ class Culture(Enum):
 
 
 class ApprovalCulture(Culture):
-    __doc__ =  Culture.__doc__
+    """An enum of statistical cultures for approval elections."""
     IMPARTIAL = ("impartial", psa.impartial, masks.impartial_approval_mask)
     IDENTITY = ("identity", psa.identity, masks.identity_approval_mask)
     EMPTY = ("empty", psa.empty)
@@ -45,7 +45,7 @@ class ApprovalCulture(Culture):
     EUCLIDEAN = ("euclidean", psa.euclidean_vcr, masks.euclidean_approval_mask)
 
 class OrdinalCulture(Culture):
-    __doc__ = Culture.__doc__
+    """An enum of statistical cultures for ordinal elections."""
     IDENTITY = ("identity", pso.identity)
     IMPARTIAL = ("impartial", pso.impartial)
     IAC = ("iac", pso.impartial_anonymous)
@@ -65,7 +65,7 @@ class OrdinalCulture(Culture):
     NORM_MALLOWS = ("norm-mallows", pso.norm_mallows, masks.norm_mallows_mask)
 
 class PseudoOrdinalCulture(Culture):
-    __doc__ = Culture.__doc__
+    """An enum of statistical cultures for pseudo-ordinal elections."""
     PSEUDO_IDENTITY = ("pseudo_uniformity", pseudo.pseudo_identity)
     PSEUDO_UNIFORMITY = ("pseudo_uniformity", pseudo.pseudo_uniformity)
     PSEUDO_ANTAGONISM = ("pseudo_antagonism", pseudo.pseudo_antagonism)
