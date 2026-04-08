@@ -56,7 +56,7 @@ class OrdinalCulture(Culture):
     PLACKETT_LUCE = ("plackett-luce", pso.plackett_luce)
     WALSH = ("walsh", pso.single_peaked_walsh)
     SPOC = ("spoc", pso.single_peaked_circle)
-    SC = ("spoc", pso.single_crossing)
+    SC = ("single-crossing", pso.single_crossing)
     APPROX_UNIFORMITY = ("approx_uniformity", comp.generate_approx_uniformity_votes)
     APPROX_STRATIFICATION = ("approx_stratification", comp.generate_approx_stratification_votes)
     EUCLIDEAN = ("euclidean", pso.euclidean, masks.euclidean_approval_mask)
@@ -66,7 +66,7 @@ class OrdinalCulture(Culture):
 
 class PseudoOrdinalCulture(Culture):
     """An enum of statistical cultures for pseudo-ordinal elections."""
-    PSEUDO_IDENTITY = ("pseudo_uniformity", pseudo.pseudo_identity)
+    PSEUDO_IDENTITY = ("pseudo_identity", pseudo.pseudo_identity)
     PSEUDO_UNIFORMITY = ("pseudo_uniformity", pseudo.pseudo_uniformity)
     PSEUDO_ANTAGONISM = ("pseudo_antagonism", pseudo.pseudo_antagonism)
     PSEUDO_STRATIFICATION = ("pseudo_stratification", pseudo.pseudo_stratification)
