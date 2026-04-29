@@ -33,3 +33,5 @@ tikzplotlib==0.10.1
 tqdm==4.66.5
 tzdata==2025.3
 webcolors==25.10.0
+
+pymongo

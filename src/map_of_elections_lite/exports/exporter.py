@@ -5,16 +5,17 @@ import re
 from collections import Counter
 from copy import deepcopy
 from typing import Any
-import numpy as np
 
+from bson import BSON
 from mapof.elections import OrdinalElectionExperiment
 
-_JSON_OUTPUT_DIR = "."
+_OUTPUT_DIR = "."
+_EXPORT_FORMAT = "json" # Default export format
 
 
-def _experiment_json_path(experiment, output_dir: str | None = None) -> str:
-    base_dir = _JSON_OUTPUT_DIR if output_dir is None else output_dir
-    filename = f"{experiment.experiment_id}.json"
+def _experiment_path(experiment, output_dir: str | None = None) -> str:
+    base_dir = _OUTPUT_DIR if output_dir is None else output_dir
+    filename = f"{experiment.experiment_id}.{_EXPORT_FORMAT}" # Use global _EXPORT_FORMAT
 
     if base_dir in ("", "."):
         return filename
@@ -43,36 +44,53 @@ def _load_document(path: str, experiment) -> dict[str, Any]:
     if not os.path.exists(path):
         return _make_base_document(experiment)
 
-    with open(path, "r", encoding="utf-8") as f:
-        return json.load(f)
+    if path.endswith(".json"):
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    elif path.endswith(".bson"):
+        with open(path, "rb") as f:
+            return BSON.decode(f.read())
+    return _make_base_document(experiment)
 
 
 def _save_document(path: str, document: dict[str, Any]) -> None:
-    raw_json = json.dumps(document, ensure_ascii=False, indent=2)
+    if path.endswith(".json"):
+        fmt = "json"
+    elif path.endswith(".bson"):
+        fmt = "bson"
+    else:
+        fmt = _EXPORT_FORMAT
 
-    pattern = r'\[\s*((?:\-?\d+(?:\.\d+)?,\s*)*\-?\d+(?:\.\d+)?)\s*\]'
-    def repl(m):
-        elements = [x.strip() for x in m.group(1).split(',')]
-        return '[' + ', '.join(elements) + ']'
+    if fmt == "json":
+        raw_json = json.dumps(document, ensure_ascii=False, indent=2)
+
+        pattern = r'\[\s*((?:\-?\d+(?:\.\d+)?,\s*)*\-?\d+(?:\.\d+)?)\s*\]'
+        def repl(m):
+            elements = [x.strip() for x in m.group(1).split(',')]
+            return '[' + ', '.join(elements) + ']'
         
-    compact_json = re.sub(pattern, repl, raw_json)
+        compact_json = re.sub(pattern, repl, raw_json)
     
-    with open(path, "w", encoding="utf-8") as f:
-        f.write(compact_json)
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(compact_json)
+    elif fmt == "bson":
+        with open(path, "wb") as f:
+            f.write(BSON.encode(document))
 
 
-def _to_jsonable(value: Any) -> Any:
+
+def _to_serializable(value: Any) -> Any:
     if isinstance(value, dict):
-        return {str(k): _to_jsonable(v) for k, v in value.items()}
+        return {str(k): _to_serializable(v) for k, v in value.items()}
 
     if isinstance(value, (list, tuple)):
-        return [_to_jsonable(v) for v in value]
+        return [_to_serializable(v) for v in value]
 
     if isinstance(value, set):
-        return sorted(_to_jsonable(v) for v in value)
+        return sorted(_to_serializable(v) for v in value)
 
     if hasattr(value, "tolist"):
-        return _to_jsonable(value.tolist())
+        return _to_serializable(value.tolist())
 
     if hasattr(value, "item"):
         try:
@@ -110,14 +128,14 @@ def export_feature_to_file(
     feature_dict: dict | None = None,
     saveas: str | None = None,
 ) -> None:
-    path = _experiment_json_path(experiment)
+    path = _experiment_path(experiment)
     document = _load_document(path, experiment)
     _upsert_experiment_header(document, experiment)
 
     key = saveas or feature_id
     document["features"][key] = {
         "feature_id": feature_id,
-        "values": _to_jsonable(feature_dict or {}),
+        "values": _to_serializable(feature_dict or {}),
     }
 
     _save_document(path, document)
@@ -128,12 +146,12 @@ def export_normalized_feature_to_file(
     feature_dict: dict | None = None,
     saveas: str | None = None,
 ) -> None:
-    path = _experiment_json_path(experiment)
+    path = _experiment_path(experiment)
     document = _load_document(path, experiment)
     _upsert_experiment_header(document, experiment)
 
     key = saveas or "normalized"
-    document["normalized_features"][key] = _to_jsonable(feature_dict or {})
+    document["normalized_features"][key] = _to_serializable(feature_dict or {})
 
     _save_document(path, document)
 
@@ -145,7 +163,7 @@ def export_embedding_to_file(
     dim: int,
     my_pos,
 ) -> None:
-    path = _experiment_json_path(experiment)
+    path = _experiment_path(experiment)
     document = _load_document(path, experiment)
     _upsert_experiment_header(document, experiment)
 
@@ -182,7 +200,7 @@ def export_distances_to_file(
     times: dict[str, dict[str, float]],
     ids=None,
 ) -> None:
-    path = _experiment_json_path(experiment)
+    path = _experiment_path(experiment)
     document = _load_document(path, experiment)
     _upsert_experiment_header(document, experiment)
 
@@ -208,7 +226,7 @@ def export_distances_multiple_processes(
     times,
     process_id,
 ) -> None:
-    path = _experiment_json_path(experiment)
+    path = _experiment_path(experiment)
     document = _load_document(path, experiment)
     _upsert_experiment_header(document, experiment)
 
@@ -231,23 +249,23 @@ def export_experiment_snapshot(
     include_votes: bool = True,
 ) -> str:
     """
-    Export full in-memory experiment state to a single JSON file.
+    Export full in-memory experiment state to a single file (JSON or BSON).
 
     Parameters
     ----------
     experiment:
         A mapof experiment object.
     output_path:
-        Optional custom output path. If omitted, uses experiments/<experiment_id>.json.
+        Optional custom output path. If omitted, uses experiments/<experiment_id>.<format>.
     include_votes:
         Whether to include raw votes for every instance.
 
     Returns
     -------
     str
-        Path to the created JSON file.
+        Path to the created file.
     """
-    path = output_path or _experiment_json_path(experiment)
+    path = output_path or _experiment_path(experiment)
     document = _load_document(path, experiment)
     _upsert_experiment_header(document, experiment)
 
@@ -258,39 +276,47 @@ def export_experiment_snapshot(
             "culture_id": getattr(instance, "culture_id", None),
             "num_candidates": getattr(instance, "num_candidates", None),
             "num_voters": getattr(instance, "num_voters", None),
-            "params": _to_jsonable(getattr(instance, "params", {})),
+            "params": _to_serializable(getattr(instance, "params", {})),
         }
         if include_votes and hasattr(instance, "votes"):
-            entry["votes"] = _to_jsonable(_aggregate_votes(instance.votes))
+            entry["votes"] = _to_serializable(_aggregate_votes(instance.votes))
 
         instances_dump[instance_id] = entry
 
     document["instances"] = instances_dump
-    document["distances"] = _to_jsonable(deepcopy(getattr(experiment, "distances", {})))
-    document["distance_times"] = _to_jsonable(deepcopy(getattr(experiment, "times", {})))
-    document["coordinates"] = _to_jsonable(deepcopy(getattr(experiment, "coordinates", {})))
-    document["features"] = _to_jsonable(deepcopy(getattr(experiment, "features", {})))
+    document["distances"] = _to_serializable(deepcopy(getattr(experiment, "distances", {})))
+    document["distance_times"] = _to_serializable(deepcopy(getattr(experiment, "times", {})))
+    document["coordinates"] = _to_serializable(deepcopy(getattr(experiment, "coordinates", {})))
+    document["features"] = _to_serializable(deepcopy(getattr(experiment, "features", {})))
 
     _save_document(path, document)
     return path
 
 
-def enable_json_export_backend(output_dir: str = "experiments") -> None:
+def enable_export_backend(output_dir: str = "experiments", fmt: str = "json") -> None:
     """
-    Patch mapof exporters so mapof writes JSON instead of CSV files.
+    Patch mapof exporters so mapof writes to the specified format (JSON or BSON).
 
     After calling this once, operations such as:
     - experiment.compute_distances(...)
     - experiment.embed_2d(...)
     - experiment.compute_feature(...)
-    will persist into one JSON file per experiment.
+    will persist into one file per experiment in the chosen format.
+
+    Parameters
+    ----------
+    output_dir:
+        The directory where export files will be saved.
+    fmt:
+        The export format, either "json" or "bson".
 
     Notes
     -----
-    - Use together with prepare_json_ordinal_experiment() for fully JSON-only flow.
+    - Use together with prepare_json_ordinal_experiment() for a fully configured flow.
     """
-    global _JSON_OUTPUT_DIR
-    _JSON_OUTPUT_DIR = output_dir
+    global _OUTPUT_DIR, _EXPORT_FORMAT
+    _OUTPUT_DIR = output_dir
+    _EXPORT_FORMAT = fmt
 
     module_names = [
         "mapof.core.persistence.experiment_exports",
@@ -300,11 +326,14 @@ def enable_json_export_backend(output_dir: str = "experiments") -> None:
     for module_name in module_names:
         try:
             exp_exports = importlib.import_module(module_name)
+            exp_exports.export_feature_to_file = export_feature_to_file
+            exp_exports.export_normalized_feature_to_file = export_normalized_feature_to_file
+            exp_exports.export_embedding_to_file = export_embedding_to_file
+            exp_exports.export_distances_to_file = export_distances_to_file
+            exp_exports.export_distances_multiple_processes = export_distances_multiple_processes
+            exp_exports.export_experiment_snapshot = export_experiment_snapshot
         except ModuleNotFoundError:
             continue
 
-        exp_exports.export_feature_to_file = export_feature_to_file
-        exp_exports.export_normalized_feature_to_file = export_normalized_feature_to_file
-        exp_exports.export_embedding_to_file = export_embedding_to_file
-        exp_exports.export_distances_to_file = export_distances_to_file
-        exp_exports.export_distances_multiple_processes = export_distances_multiple_processes
+def enable_json_export_backend(output_dir: str="experiments"): enable_export_backend(output_dir, "json")
+def enable_bson_export_backend(output_dir: str="experiments"): enable_export_backend(output_dir, "bson")
