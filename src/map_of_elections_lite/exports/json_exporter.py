@@ -2,8 +2,12 @@ import json
 import importlib
 import os
 import re
+from collections import Counter
 from copy import deepcopy
 from typing import Any
+import numpy as np
+
+from mapof.elections import OrdinalElectionExperiment
 
 _JSON_OUTPUT_DIR = "."
 
@@ -88,8 +92,11 @@ def _upsert_experiment_header(document: dict[str, Any], experiment) -> None:
     document["distance_id"] = getattr(experiment, "distance_id", document.get("distance_id"))
     document["embedding_id"] = getattr(experiment, "embedding_id", document.get("embedding_id"))
 
+def _aggregate_votes(votes: list[list[int]]) -> list[tuple[tuple[int, ...], int]]:
+    votes = [tuple(i) for i in votes]
+    return Counter(votes).most_common(None)
 
-def prepare_json_ordinal_experiment(experiment_id: str = "experiment", **kwargs):
+def prepare_json_ordinal_experiment(experiment_id: str = "experiment", **kwargs) -> OrdinalElectionExperiment:
     import mapof.elections as mapof
 
     experiment = mapof.prepare_online_ordinal_experiment(**kwargs)
@@ -254,7 +261,7 @@ def export_experiment_snapshot(
             "params": _to_jsonable(getattr(instance, "params", {})),
         }
         if include_votes and hasattr(instance, "votes"):
-            entry["votes"] = _to_jsonable(instance.votes)
+            entry["votes"] = _to_jsonable(_aggregate_votes(instance.votes))
 
         instances_dump[instance_id] = entry
 
