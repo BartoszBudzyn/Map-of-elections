@@ -5,7 +5,6 @@ import re
 from collections import Counter
 from copy import deepcopy
 from typing import Any
-import numpy as np
 
 from mapof.elections import OrdinalElectionExperiment
 
@@ -25,7 +24,7 @@ def _experiment_json_path(experiment, output_dir: str | None = None) -> str:
 
 def _make_base_document(experiment) -> dict[str, Any]:
     return {
-        "schema_version": "1.0",
+        # "schema_version": "1.0",
         "experiment_id": experiment.experiment_id,
         "distance_id": getattr(experiment, "distance_id", None),
         "embedding_id": getattr(experiment, "embedding_id", None),
@@ -87,7 +86,7 @@ def _to_jsonable(value: Any) -> Any:
 
 
 def _upsert_experiment_header(document: dict[str, Any], experiment) -> None:
-    document["schema_version"] = document.get("schema_version", "1.0")
+    # document["schema_version"] = document.get("schema_version", "1.0")
     document["experiment_id"] = experiment.experiment_id
     document["distance_id"] = getattr(experiment, "distance_id", document.get("distance_id"))
     document["embedding_id"] = getattr(experiment, "embedding_id", document.get("embedding_id"))
