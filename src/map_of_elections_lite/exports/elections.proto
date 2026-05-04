@@ -1,2 +1,29 @@
 syntax = "proto3";
 
+message DistancesFromInstance {
+  map<string, double> distances_to_other_instances = 1;
+}
+
+message Experiment {
+  string experiment_id=1;
+  string distance_id=2;
+  string embedding_id=3;
+  map<string, Instance> instances=4;
+  map<string, DistancesFromInstance> distances = 5;
+}
+
+message Instance {
+  string instance_id=1;
+  string culture_id=2;
+  int32 num_candidates=3;
+  int32 num_voters=4;
+  map<string, string> params=5;
+  repeated Vote votes=6;
+  double x_coord=7;
+  double y_coord=8;
+}
+
+message Vote {
+  repeated int32 candidate_order=1;
+  int32 cardinality=2;
+}
