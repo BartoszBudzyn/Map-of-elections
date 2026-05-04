@@ -1,6 +1,6 @@
-from map_of_elections_lite.exports.json_exporter import enable_json_export_backend
-from map_of_elections_lite.exports.json_exporter import export_experiment_snapshot
-from map_of_elections_lite.exports.json_exporter import prepare_json_ordinal_experiment
+from map_of_elections_lite.exports.exporter import enable_json_export_backend
+from map_of_elections_lite.exports.exporter import export_experiment_snapshot
+from map_of_elections_lite.exports.exporter import prepare_json_ordinal_experiment
 from map_of_elections_lite.resources.cultures import OrdinalCulture
 from map_of_elections_lite.resources.distances import OrdinalDistance
 
