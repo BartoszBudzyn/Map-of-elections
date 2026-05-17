@@ -5,7 +5,6 @@ message Experiment {
   string distance_id=2;
   string embedding_id=3;
   map<string, Instance> instances=4;
-  map<string, double> distances = 5;
 }
 
 message Instance {
@@ -17,6 +16,7 @@ message Instance {
   repeated Vote votes=6;
   double x_coord=7;
   double y_coord=8;
+  map<string, double> distances=9;
 }
 
 message Vote {

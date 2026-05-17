@@ -224,7 +224,7 @@ def export_distances_multiple_processes(
     _save_document(path, document)
 
 
-def export_experiment_snapshot(
+def export_experiment_snapshot_json(
     experiment,
     output_path: str | None = None,
     include_votes: bool = True,

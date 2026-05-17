@@ -1,8 +1,7 @@
 from map_of_elections_lite.exports.json_exporter import enable_json_export_backend
-from map_of_elections_lite.exports.json_exporter import export_experiment_snapshot
-from map_of_elections_lite.exports.json_exporter import prepare_json_ordinal_experiment
+from map_of_elections_lite.exports.json_exporter import export_experiment_snapshot_json, prepare_json_ordinal_experiment
+from map_of_elections_lite.exports import proto_exporter
 from map_of_elections_lite.resources.cultures import OrdinalCulture
-from map_of_elections_lite.resources.distances import OrdinalDistance
 
 
 def create_simple_json_map():
@@ -37,13 +36,12 @@ def create_simple_json_map():
     )
     experiment.embed_2d(embedding_id='fr')
 
-    experiment.print_map_2d(
-        title='Test Map',
-        saveas='test_output'
-    )
-
-    output_path = export_experiment_snapshot(experiment, output_path="../src/map_of_elections_lite/test_json_output.json")
+    output_path = export_experiment_snapshot_json(experiment, output_path="../src/map_of_elections_lite/test_json_output.json")
     print(f"JSON saved as: {output_path}")
+
+    proto_path = "../src/map_of_elections_lite/test_proto_output.pb"
+    proto_out = proto_exporter.export_experiment_snapshot_proto(experiment, output_path=proto_path)
+    print(f"Proto saved as: {proto_out}")
 
     return experiment
 
