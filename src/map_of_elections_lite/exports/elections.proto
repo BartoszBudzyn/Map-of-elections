@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+message Experiment {
+  string experiment_id=1;
+  string distance_id=2;
+  string embedding_id=3;
+  map<string, Instance> instances=4;
+}
+
+message Instance {
+  string instance_id=1;
+  string culture_id=2;
+  int32 num_candidates=3;
+  int32 num_voters=4;
+  map<string, string> params=5;
+  repeated Vote votes=6;
+  double x_coord=7;
+  double y_coord=8;
+  map<string, double> distances=9;
+}
+
+message Vote {
+  repeated int32 candidate_order=1;
+  int32 cardinality=2;
+}
