@@ -6,7 +6,7 @@ from collections import Counter
 from copy import deepcopy
 from typing import Any
 
-from mapof.elections import OrdinalElectionExperiment
+from mapof.elections import ApprovalElectionExperiment, OrdinalElectionExperiment
 
 _JSON_OUTPUT_DIR = "."
 
@@ -91,14 +91,25 @@ def _upsert_experiment_header(document: dict[str, Any], experiment) -> None:
     document["distance_id"] = getattr(experiment, "distance_id", document.get("distance_id"))
     document["embedding_id"] = getattr(experiment, "embedding_id", document.get("embedding_id"))
 
-def _aggregate_votes(votes: list[list[int]]) -> list[tuple[tuple[int, ...], int]]:
-    votes = [tuple(i) for i in votes]
+def _aggregate_votes(votes: list) -> list[tuple[tuple[int, ...], int]]:
+    votes = [
+        tuple(sorted(v)) if isinstance(v, (set, frozenset)) else tuple(v)
+        for v in votes
+    ]
     return Counter(votes).most_common(None)
 
 def prepare_json_ordinal_experiment(experiment_id: str = "experiment", **kwargs) -> OrdinalElectionExperiment:
     import mapof.elections as mapof
 
     experiment = mapof.prepare_online_ordinal_experiment(**kwargs)
+    experiment.experiment_id = experiment_id
+    return experiment
+
+
+def prepare_json_approval_experiment(experiment_id: str = "experiment", **kwargs) -> ApprovalElectionExperiment:
+    import mapof.elections as mapof
+
+    experiment = mapof.prepare_online_approval_experiment(**kwargs)
     experiment.experiment_id = experiment_id
     return experiment
 
