@@ -5,6 +5,7 @@ message Experiment {
   string distance_id=2;
   string embedding_id=3;
   map<string, Instance> instances=4;
+  string election_type=5;
 }
 
 message Instance {

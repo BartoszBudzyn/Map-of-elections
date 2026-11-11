@@ -26,6 +26,7 @@ def _make_base_document(experiment) -> dict[str, Any]:
     return {
         # "schema_version": "1.0",
         "experiment_id": experiment.experiment_id,
+        "election_type": _get_election_type(experiment),
         "distance_id": getattr(experiment, "distance_id", None),
         "embedding_id": getattr(experiment, "embedding_id", None),
         "instances": {},
@@ -88,8 +89,24 @@ def _to_jsonable(value: Any) -> Any:
 def _upsert_experiment_header(document: dict[str, Any], experiment) -> None:
     # document["schema_version"] = document.get("schema_version", "1.0")
     document["experiment_id"] = experiment.experiment_id
+    election_type = _get_election_type(experiment)
     document["distance_id"] = getattr(experiment, "distance_id", document.get("distance_id"))
     document["embedding_id"] = getattr(experiment, "embedding_id", document.get("embedding_id"))
+
+    header = {"experiment_id": document["experiment_id"], "election_type": election_type}
+    remaining = {key: value for key, value in document.items() if key not in header}
+    document.clear()
+    document.update(header)
+    document.update(remaining)
+
+
+def _get_election_type(experiment) -> str:
+    if isinstance(experiment, ApprovalElectionExperiment):
+        return "approval"
+    if isinstance(experiment, OrdinalElectionExperiment):
+        return "ordinal"
+    raise TypeError(f"Unsupported election experiment type: {type(experiment).__name__}")
+
 
 def _aggregate_votes(votes: list) -> list[tuple[tuple[int, ...], int]]:
     votes = [
@@ -238,7 +255,7 @@ def export_distances_multiple_processes(
 def export_experiment_snapshot_json(
     experiment,
     output_path: str | None = None,
-    include_votes: bool = True,
+    include_votes: bool = True
 ) -> str:
     """
     Export full in-memory experiment state to a single JSON file.

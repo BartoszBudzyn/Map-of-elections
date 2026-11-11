@@ -47,9 +47,11 @@ class Experiment(_message.Message):
     DISTANCE_ID_FIELD_NUMBER: _builtins.int
     EMBEDDING_ID_FIELD_NUMBER: _builtins.int
     INSTANCES_FIELD_NUMBER: _builtins.int
+    ELECTION_TYPE_FIELD_NUMBER: _builtins.int
     experiment_id: _builtins.str
     distance_id: _builtins.str
     embedding_id: _builtins.str
+    election_type: _builtins.str
     @_builtins.property
     def instances(self) -> _containers.MessageMap[_builtins.str, Global___Instance]: ...
     def __init__(
@@ -58,11 +60,12 @@ class Experiment(_message.Message):
         experiment_id: _builtins.str = ...,
         distance_id: _builtins.str = ...,
         embedding_id: _builtins.str = ...,
+        election_type: _builtins.str = ...,
         instances: _abc.Mapping[_builtins.str, Global___Instance] | None = ...,
     ) -> None: ...
     _HasFieldArgType: _TypeAlias = _Never  # noqa: Y015
     def HasField(self, field_name: _HasFieldArgType) -> _builtins.bool: ...
-    _ClearFieldArgType: _TypeAlias = _typing.Literal["distance_id", b"distance_id", "embedding_id", b"embedding_id", "experiment_id", b"experiment_id", "instances", b"instances"]  # noqa: Y015
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["distance_id", b"distance_id", "election_type", b"election_type", "embedding_id", b"embedding_id", "experiment_id", b"experiment_id", "instances", b"instances"]  # noqa: Y015
     def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
     def WhichOneof(self, oneof_group: _Never) -> None: ...
 

@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0f\x65lections.proto\"\xba\x01\n\nExperiment\x12\x15\n\rexperiment_id\x18\x01 \x01(\t\x12\x13\n\x0b\x64istance_id\x18\x02 \x01(\t\x12\x14\n\x0c\x65mbedding_id\x18\x03 \x01(\t\x12-\n\tinstances\x18\x04 \x03(\x0b\x32\x1a.Experiment.InstancesEntry\x1a;\n\x0eInstancesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x18\n\x05value\x18\x02 \x01(\x0b\x32\t.Instance:\x02\x38\x01\"\xcc\x02\n\x08Instance\x12\x13\n\x0binstance_id\x18\x01 \x01(\t\x12\x12\n\nculture_id\x18\x02 \x01(\t\x12\x16\n\x0enum_candidates\x18\x03 \x01(\x05\x12\x12\n\nnum_voters\x18\x04 \x01(\x05\x12%\n\x06params\x18\x05 \x03(\x0b\x32\x15.Instance.ParamsEntry\x12\x14\n\x05votes\x18\x06 \x03(\x0b\x32\x05.Vote\x12\x0f\n\x07x_coord\x18\x07 \x01(\x01\x12\x0f\n\x07y_coord\x18\x08 \x01(\x01\x12+\n\tdistances\x18\t \x03(\x0b\x32\x18.Instance.DistancesEntry\x1a-\n\x0bParamsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\x1a\x30\n\x0e\x44istancesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x01:\x02\x38\x01\"4\n\x04Vote\x12\x17\n\x0f\x63\x61ndidate_order\x18\x01 \x03(\x05\x12\x13\n\x0b\x63\x61rdinality\x18\x02 \x01(\x05\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0felections.proto"\xd1\x01\n\nExperiment\x12\x15\n\rexperiment_id\x18\x01 \x01(\t\x12\x13\n\x0bdistance_id\x18\x02 \x01(\t\x12\x14\n\x0cembedding_id\x18\x03 \x01(\t\x12-\n\tinstances\x18\x04 \x03(\x0b2\x1a.Experiment.InstancesEntry\x12\x15\n\relection_type\x18\x05 \x01(\t\x1a;\n\x0eInstancesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x18\n\x05value\x18\x02 \x01(\x0b2\t.Instance:\x028\x01"\xcc\x02\n\x08Instance\x12\x13\n\x0binstance_id\x18\x01 \x01(\t\x12\x12\n\nculture_id\x18\x02 \x01(\t\x12\x16\n\x0enum_candidates\x18\x03 \x01(\x05\x12\x12\n\nnum_voters\x18\x04 \x01(\x05\x12%\n\x06params\x18\x05 \x03(\x0b2\x15.Instance.ParamsEntry\x12\x14\n\x05votes\x18\x06 \x03(\x0b2\x05.Vote\x12\x0f\n\x07x_coord\x18\x07 \x01(\x01\x12\x0f\n\x07y_coord\x18\x08 \x01(\x01\x12+\n\tdistances\x18\t \x03(\x0b2\x18.Instance.DistancesEntry\x1a-\n\x0bParamsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x028\x01\x1a0\n\x0eDistancesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x01:\x028\x01"4\n\x04Vote\x12\x17\n\x0fcandidate_order\x18\x01 \x03(\x05\x12\x13\n\x0bcardinality\x18\x02 \x01(\x05b\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -38,15 +38,15 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_INSTANCE_DISTANCESENTRY']._loaded_options = None
   _globals['_INSTANCE_DISTANCESENTRY']._serialized_options = b'8\001'
   _globals['_EXPERIMENT']._serialized_start=20
-  _globals['_EXPERIMENT']._serialized_end=206
-  _globals['_EXPERIMENT_INSTANCESENTRY']._serialized_start=147
-  _globals['_EXPERIMENT_INSTANCESENTRY']._serialized_end=206
-  _globals['_INSTANCE']._serialized_start=209
-  _globals['_INSTANCE']._serialized_end=541
-  _globals['_INSTANCE_PARAMSENTRY']._serialized_start=446
-  _globals['_INSTANCE_PARAMSENTRY']._serialized_end=491
-  _globals['_INSTANCE_DISTANCESENTRY']._serialized_start=493
-  _globals['_INSTANCE_DISTANCESENTRY']._serialized_end=541
-  _globals['_VOTE']._serialized_start=543
-  _globals['_VOTE']._serialized_end=595
+  _globals['_EXPERIMENT']._serialized_end=229
+  _globals['_EXPERIMENT_INSTANCESENTRY']._serialized_start=170
+  _globals['_EXPERIMENT_INSTANCESENTRY']._serialized_end=229
+  _globals['_INSTANCE']._serialized_start=232
+  _globals['_INSTANCE']._serialized_end=564
+  _globals['_INSTANCE_PARAMSENTRY']._serialized_start=469
+  _globals['_INSTANCE_PARAMSENTRY']._serialized_end=514
+  _globals['_INSTANCE_DISTANCESENTRY']._serialized_start=516
+  _globals['_INSTANCE_DISTANCESENTRY']._serialized_end=564
+  _globals['_VOTE']._serialized_start=566
+  _globals['_VOTE']._serialized_end=618
 # @@protoc_insertion_point(module_scope)

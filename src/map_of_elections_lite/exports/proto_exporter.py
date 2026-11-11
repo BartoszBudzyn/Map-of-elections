@@ -1,6 +1,6 @@
 from mapof.elections.objects.ElectionExperiment import ElectionExperiment
 
-from .json_exporter import _aggregate_votes
+from .json_exporter import _aggregate_votes, _get_election_type
 from . import elections_pb2, Instance
 
 
@@ -15,6 +15,7 @@ def serialize_experiment(experiment: ElectionExperiment, include_votes: bool) ->
     proto_experiment.experiment_id = experiment.experiment_id or ""
     proto_experiment.distance_id = experiment.distance_id or ""
     proto_experiment.embedding_id = experiment.embedding_id or ""
+    proto_experiment.election_type = _get_election_type(experiment)
 
     distances = experiment.distances or {}
     coordinates = experiment.coordinates or {}
